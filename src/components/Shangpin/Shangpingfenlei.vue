@@ -44,6 +44,7 @@
         >
           <vxe-table-column field="id" width='100' title="ID"></vxe-table-column>
           <vxe-table-column field="name" title="分类名称"></vxe-table-column>
+          <vxe-table-column field="weight" title="比重"></vxe-table-column>
           <!-- <vxe-table-column field="is_show" title="状态(是否显示)">
             <template slot-scope="scope">
               <el-switch
@@ -99,6 +100,13 @@
             <el-col :span="20">
               <el-form-item label="分类名称" prop="category_name">
                 <el-input size="small" placeholder="请输入分类名称" v-model="addForm.category_name"></el-input>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="20">
+              <el-form-item label="比重" prop="weight">
+                <el-input size="small" placeholder="请输入分类比重" v-model="addForm.weight"></el-input>
               </el-form-item>
             </el-col>
           </el-row>
@@ -164,6 +172,7 @@ export default {
       addDialogVisible: false,
       addForm: {
         category_name: "",
+        weight:'',
       },
       rules: {
         category_name: [
@@ -236,6 +245,7 @@ export default {
       // row.is_show = row.is_show == "0" ? "隐藏" : "显示";
       // row.pid = row.pid == "0" ? "顶级菜单" : row.pid;
       this.addForm.category_name = row.name;
+      this.addForm.weight = row.weight;
     },
     async tabDel(row) {
       console.log(row);
@@ -259,7 +269,8 @@ export default {
         if (valid) {
           if (this.isAdd) {
             const res = await this.$api.updateCategory({
-              name: this.addForm.category_name
+              name: this.addForm.category_name,
+              weight: this.addForm.weight,
             });
             if (res.status == 200) {
               this.$message({
@@ -273,7 +284,8 @@ export default {
             const res = await this.$api.updateCategory(
               {
                 id:this.id,
-                name: this.addForm.category_name
+                name: this.addForm.category_name,
+                weight: this.addForm.weight,
               },
             );
             if (res.status == 200) {

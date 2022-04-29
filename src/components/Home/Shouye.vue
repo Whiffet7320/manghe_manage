@@ -92,8 +92,8 @@
           </div>
         </div>
         <div class="tit">
-          <div class="txt1">{{substitution_num}}</div>
-          <div class="txt2">总置换次数</div>
+          <div class="txt1">{{duihuan}}</div>
+          <div class="txt2">兑换盈利</div>
         </div>
       </div>
       <div class="box">
@@ -103,8 +103,8 @@
           </div>
         </div>
         <div class="tit">
-          <div class="txt1">{{pick_total}}</div>
-          <div class="txt2">总提取金额</div>
+          <div class="txt1">{{fenjie}}</div>
+          <div class="txt2">分解盈利</div>
         </div>
       </div>
       <div class="box">
@@ -114,21 +114,12 @@
           </div>
         </div>
         <div class="tit">
-          <div class="txt1">{{pick_time}}</div>
-          <div class="txt2">总提取次数</div>
+          <div class="txt1">{{tiqu}}</div>
+          <div class="txt2">提取盈利</div>
         </div>
       </div>
-      <div class="box">
-        <div class="icon1 i1-2">
-          <div class="icon2 i1-2">
-            <i class="el-icon-s-claim"></i>
-          </div>
-        </div>
-        <div class="tit">
-          <div class="txt1">{{decompose_time}}</div>
-          <div class="txt2">总分解次数</div>
-        </div>
-      </div>
+    </div>
+    <!-- <div class="top">
       <div class="box">
         <div class="icon1 i1-3">
           <div class="icon2 i1-3">
@@ -140,12 +131,46 @@
           <div class="txt2">总分解金额</div>
         </div>
       </div>
-    </div>
+      <div class="box">
+        <div class="icon1">
+          <div class="icon2">
+            <i class="el-icon-s-order"></i>
+          </div>
+        </div>
+        <div class="tit">
+          <div class="txt1">{{substitution_person}}</div>
+          <div class="txt2">置换人数</div>
+        </div>
+      </div>
+            <div class="box">
+        <div class="icon1 i1-2">
+          <div class="icon2 i1-2">
+            <i class="el-icon-s-claim"></i>
+          </div>
+        </div>
+        <div class="tit">
+          <div class="txt1">{{decompose_time}}</div>
+          <div class="txt2">总分解次数</div>
+        </div>
+      </div>
+    </div> -->
+    <div class="txxx">盲盒销量</div>
     <div class="myTable">
       <vxe-table :data="tableData2" align="center">
         <vxe-table-column field="box_name" title="盲盒名称"></vxe-table-column>
         <vxe-table-column field="box_num" title="购买数量"></vxe-table-column>
         <vxe-table-column field="box_price" title="价格"></vxe-table-column>
+        <vxe-table-column field="person_num" title="购买人数"></vxe-table-column>
+        <vxe-table-column field="box_prize" title="箱子开出的商品价值"></vxe-table-column>
+      </vxe-table>
+    </div>
+    <div class="txxx">置换数据</div>
+    <div class="myTable">
+      <vxe-table :data="tableData3" align="center">
+        <vxe-table-column field="substitution_before_sum" title="商品实际金额"></vxe-table-column>
+        <vxe-table-column field="substitution_pay" title="置换总聚豆"></vxe-table-column>
+        <vxe-table-column field="substitution_person_num" title="置换总人数"></vxe-table-column>
+        <vxe-table-column field="substitution_profit" title="置换盈利"></vxe-table-column>
       </vxe-table>
     </div>
     <!-- <div id="main1"></div>
@@ -172,9 +197,16 @@ export default {
       decompose_total2: 0,
       decompose_time2: 0,
       pick_time2: 0,
+      substitution_person: 0,
+      box_prize: 0,
+      person_num: 0,
       tableData: [],
       tableData2: [],
-      nowDate:'',
+      tableData3:[],
+      nowDate: "",
+      duihuan:'',
+      fenlei:'',
+      tiqu:'',
     };
   },
   created() {
@@ -205,20 +237,27 @@ export default {
       // this.decompose_time = res.data.decompose_time;
       // this.pick_time = res.data.pick_time;
       // this.tableData = res.data.box_sale;
-      const res2 = await this.$api.getOperate({
+      const res2 = await this.$api.getOperateData({
         // isToday: true,
-        start_time:this.formInline.time[0],
-        end_time:this.formInline.time[1],
+        start_time: this.formInline.time[0],
+        end_time: this.formInline.time[1]
       });
-      this.decompose_total = res2.data.decompose_total;
-      this.substitution_num = res2.data.substitution_num;
-      this.pick_total = res2.data.pick_total;
-      this.decompose_time = res2.data.decompose_time;
-      this.pick_time = res2.data.pick_time;
+      this.duihuan = res2.data.duihuan;
+      this.fenjie = res2.data.fenjie;
+      this.tiqu = res2.data.tiqu;
+      // this.decompose_total = res2.data.decompose_total;
+      // this.substitution_num = res2.data.substitution_num;
+      // this.pick_total = res2.data.pick_total;
+      // this.decompose_time = res2.data.decompose_time;
+      // this.pick_time = res2.data.pick_time;
+      // this.substitution_person = res2.data.substitution_person;
+      // this.box_prize = res2.data.box_prize;
+      // this.person_num = res2.data.person_num;
       this.tableData2 = res2.data.box_sale;
+      this.tableData3 = [res2.data.zhihuan]
     },
     onSubmit() {
-      this.getData2()
+      this.getData2();
     },
     async getData() {
       const res = await this.$api.dashboard();
@@ -404,6 +443,11 @@ export default {
 
 <style lang="scss" scoped>
 .index {
+}
+.txxx{
+  font-weight: 700;
+  font-size: 14px;
+  margin: 20px 0;
 }
 .myForm {
   /deep/ .el-form-item__label {

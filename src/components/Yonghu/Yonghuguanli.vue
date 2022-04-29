@@ -11,40 +11,19 @@
       </div>
     </div>
     <div class="nav2">
-      <!-- <div class="myForm">
+      <div class="myForm">
         <el-form :inline="true" :model="formInline" class="demo-form-inline">
-          <el-form-item label="用户搜索：">
-            <div class="search">
-              <el-input
-                size="small"
-                placeholder="请输入内容"
-                v-model="formInline.search"
-                class="input-with-select"
-              >
-                <el-select
-                  class="left-select"
-                  v-model="formInline.select"
-                  slot="prepend"
-                  placeholder="请选择"
-                >
-                  <el-option label="全部" value="1"></el-option>
-                  <el-option label="UID" value="2"></el-option>
-                  <el-option label="手机号" value="3"></el-option>
-                  <el-option label="用户名称" value="4"></el-option>
-                </el-select>
-              </el-input>
-            </div>
+          <el-form-item label="ID搜索：">
+            <el-input size="small" v-model="formInline.search" placeholder="请输入内容"></el-input>
           </el-form-item>
           <el-form-item>
-            <el-button size="small" icon="el-icon-search" type="primary" @click="onSubmit"
-              >搜索</el-button
-            >
-            <el-button size="small" @click="onReact"
+            <el-button size="small" icon="el-icon-search" type="primary" @click="onSubmit">搜索</el-button>
+            <!-- <el-button size="small" @click="onReact"
               >重置</el-button
-            >
+            >-->
           </el-form-item>
         </el-form>
-      </div>-->
+      </div>
       <div class="tit1">
         <!-- <el-button
           @click="toAddShop"
@@ -101,7 +80,7 @@
             <template slot-scope="scope">
               <div class="flex">
                 <!-- <el-button size="small" @click="toEdit(scope.row)" type="text">编辑</el-button> -->
-                <el-button size="small" @click="seeMingxi(scope.row)" type="text">查看取消订单数据</el-button>
+                <el-button size="small" @click="seeMingxi(scope.row)" type="text">查看订单数据</el-button>
                 <!-- <el-button size="small" @click="toPingtuanjilu(scope.row)" type="text">拼团记录</el-button> -->
               </div>
             </template>
@@ -120,28 +99,46 @@
       </div>
     </div>
     <!-- 查看取消订单数据 -->
-    <el-dialog title="查看取消订单数据" :visible.sync="dialogVisible" width="80%" :before-close="handleClose">
-      <!-- <div class="myForm">
+    <el-dialog title="查看订单数据" :visible.sync="dialogVisible" width="80%" :before-close="handleClose">
+      <div class="myForm">
         <el-form ref="mingxiFrom" :model="mingxiFrom" label-width="80px">
           <el-row>
             <el-col :span="20">
-              <el-form-item label="拼团状态：">
-                <el-radio-group @change="changeMingxiRadio" v-model="mingxiFrom.rad1" size="small">
-                  <el-radio-button label="1">积分明细</el-radio-button>
-                  <el-radio-button label="2">收益明细</el-radio-button>
-                  <el-radio-button label="3">资金余额明细</el-radio-button>
-                </el-radio-group>
+              <el-form-item label="选择时间：">
+                <el-date-picker
+                  size="small"
+                  v-model="mingxiFrom.time"
+                  type="daterange"
+                  range-separator="至"
+                  start-placeholder="开始日期"
+                  end-placeholder="结束日期"
+                  value-format="yyyy-MM-dd"
+                ></el-date-picker>
+                <el-button
+                  size="small"
+                  type="primary"
+                  style="margin-left:20px"
+                  @click="onMXSubmit"
+                  icon="el-icon-search"
+                >查询</el-button>
               </el-form-item>
             </el-col>
           </el-row>
         </el-form>
-      </div> -->
+      </div>
       <div class="myTable">
+        <div class="ttxt">
+          <div class="tt">商品原价总计：{{user_box_before}}</div>
+          <div class="tt">盲盒购买花费总计：{{user_box_pay}}</div>
+          <div class="tt">盲盒开出的奖品：{{user_box_get}}</div>
+          <div class="tt">订单数：{{order_sum}}</div>
+        </div>
         <vxe-table :data="mingxiTableData">
-          <vxe-table-column field="cancle_today_time" title="今日取消次数"></vxe-table-column>
-          <vxe-table-column field="cancle_today_total" title="今日取消总额"></vxe-table-column>
-          <vxe-table-column field="cancle_total_time" title="总取消次数"></vxe-table-column>
-          <vxe-table-column field="cancle_total_total" title="取消总额"></vxe-table-column>
+          <vxe-table-column field="box_name" title="盲盒类型"></vxe-table-column>
+          <vxe-table-column field="box_before" title="商品原价"></vxe-table-column>
+          <vxe-table-column field="box_price" title="购买盲盒花费"></vxe-table-column>
+          <vxe-table-column field="box_prize" title="盲盒所得"></vxe-table-column>
+          <vxe-table-column field="order_sum" title="订单数"></vxe-table-column>
         </vxe-table>
         <!-- <el-pagination
           class="fenye"
@@ -152,7 +149,7 @@
           :page-sizes="[10, 15, 20, 30]"
           layout="total,sizes, prev, pager, next, jumper"
           :total="this.mingxiTotal"
-        ></el-pagination> -->
+        ></el-pagination>-->
       </div>
     </el-dialog>
     <!-- 编辑 -->
@@ -213,7 +210,7 @@ export default {
       total: 51,
       dialogVisible: false,
       mingxiFrom: {
-        rad1: "1"
+        time: null
       },
       mingxiTableData: [],
       mingxiTotal: 0,
@@ -225,7 +222,12 @@ export default {
         uniqid: "",
         spread_uid: ""
       },
-      editId: ""
+      editId: "",
+      userId: "",
+      user_box_before: 0,
+      user_box_pay: 0,
+      order_sum: 0,
+      user_box_get: 0
     };
   },
   created() {
@@ -235,7 +237,8 @@ export default {
     async getData() {
       const res = await this.$api.getUserList({
         pagesize: this.yonghuguanliPageSize,
-        pagenum: this.yonghuguanliPage
+        pagenum: this.yonghuguanliPage,
+        search_key:this.formInline.search,
       });
       console.log(res.data.data);
       this.total = res.data.total;
@@ -260,17 +263,20 @@ export default {
       // this.options = res2.data;
     },
     async getMingxiData() {
-      const res = await this.$api.user_bill_log({
-        user_id: this.mingxiUser_id,
-        way: this.mingxiFrom.rad1
+      console.log(this.mingxiFrom);
+      const res = await this.$api.getUserHistoryList({
+        user_id: this.userId,
+        start_time: this.mingxiFrom.time ? this.mingxiFrom.time[0] : "",
+        end_time: this.mingxiFrom.time ? this.mingxiFrom.time[1] : ""
       });
-      console.log(res.data);
-      this.mingxiTableData = res.data.data;
-      this.mingxiTableData.forEach(ele => {
-        ele.myPm = ele.pm == "1" ? "获得" : "支出";
-        ele.myAdd_time = this.formatDate(ele.add_time * 1000);
-      });
-      this.mingxiTotal = res.data.total;
+      this.user_box_before = res.data.user_box_before;
+      this.user_box_pay = res.data.user_box_pay;
+      this.order_sum = res.data.order_sum;
+      this.user_box_get = res.data.user_box_get;
+      this.mingxiTableData = res.data.box_order;
+    },
+    onMXSubmit() {
+      this.getMingxiData();
     },
     async submitForm() {
       const res = await this.$api.updat_user_info({
@@ -306,17 +312,9 @@ export default {
       this.editDialogVisible = true;
     },
     async seeMingxi(row) {
+      this.userId = row.user_id;
       this.mingxiTableData = [];
-      const res = await this.$api.getCancelOperate({ query_id: row.user_id });
-      this.mingxiTableData.push({
-        cancle_today_time: res.data.cancle_today_time,
-        cancle_today_total: res.data.cancle_today_total,
-        cancle_total_time: res.data.cancle_total_time,
-        cancle_total_total: res.data.cancle_total_total,
-      });
-      // this.mingxiTableData = res.data
-      // this.mingxiUser_id = row.user_id;
-      // this.getMingxiData();
+      this.getMingxiData();
       this.dialogVisible = true;
     },
     toPingtuanjilu(row) {
@@ -328,7 +326,7 @@ export default {
       });
     },
     onSubmit() {
-      console.log("submit!");
+      this.getData()
     },
     onReact() {},
     handleClose() {
@@ -369,6 +367,15 @@ export default {
 
 <style lang="scss" scoped>
 .index {
+}
+.ttxt {
+  display: flex;
+  align-items: center;
+  margin: 20px 0;
+  font-weight: 700;
+  .tt {
+    margin-right: 16px;
+  }
 }
 .nav1 {
   margin: 0 -18px;

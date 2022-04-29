@@ -382,20 +382,22 @@ export default {
     },
     async tabDel(row) {
       //  manage_del
-      const res = await this.$api.deleteManageById({
-        delete_id: row.manage_id
-      });
-      if (res.status == 200) {
-        this.$message({
-          message: res.msg,
-          type: "success"
+      this.$confirm("确认删除？").then(async () => {
+        const res = await this.$api.deleteManageById({
+          delete_id: row.manage_id
         });
-        this.getData();
-        this.addDialogVisible = false;
-      } else {
-        this.$message.error(res.msg);
-        this.getData();
-      }
+        if (res.status == 200) {
+          this.$message({
+            message: res.msg,
+            type: "success"
+          });
+          this.getData();
+          this.addDialogVisible = false;
+        } else {
+          this.$message.error(res.msg);
+          this.getData();
+        }
+      });
     },
     async tabEdit(row) {
       this.id = row.id;

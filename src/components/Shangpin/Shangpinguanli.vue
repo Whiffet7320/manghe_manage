@@ -21,33 +21,39 @@
               <el-radio-button label="3">交易完成</el-radio-button>
             </el-radio-group>
           </el-form-item>-->
-          <!-- <el-form-item label="商品分类：">
-            <el-cascader
-              size="small"
-              :options="options"
-              :props="{ checkStrictly: true, value: 'id',label: 'category_name'}"
-              clearable
-            ></el-cascader>
+          <el-form-item label="商品分类：">
+            <el-select size="small" v-model="formInline.category_id" placeholder="请选择">
+              <el-option
+                v-for="item in options2"
+                :key="item.id"
+                :label="item.name"
+                :value="item.id"
+              ></el-option>
+            </el-select>
           </el-form-item>
           <el-form-item label="商品搜索：">
-            <el-input
-              size="small"
-              v-model="formInline.user"
-              placeholder="商品搜索"
-            ></el-input>
+            <el-input size="small" v-model="formInline.search" placeholder="商品搜索"></el-input>
           </el-form-item>
           <el-form-item>
-            <el-button size="small" type="primary" @click="onSubmit"
-              >查询</el-button
-            >
-          </el-form-item>-->
+            <el-button size="small" type="primary" @click="onSubmit">查询</el-button>
+          </el-form-item>
         </el-form>
       </div>
       <div class="tit1">
         <el-button @click="toAddShop" size="small" type="primary" icon="el-icon-plus">添加商品</el-button>
+        <div class="b-right">
+          <el-button @click="plshang" size="small" type="primary">批量上架</el-button>
+          <el-button @click="plxia" size="small" type="primary">批量下架</el-button>
+          <el-button @click="plshan" size="small" type="primary">批量删除</el-button>
+        </div>
       </div>
       <div class="myTable">
-        <vxe-table :data="tableData">
+        <vxe-table
+          :data="tableData"
+          ref="xTable1"
+          @checkbox-all="selectAllEvent"
+          @checkbox-change="selectChangeEvent"
+        >
           <!-- <vxe-table-column type="expand" width="30" :fixed="null">
             <template #content="{ row }">
               <template>
@@ -76,6 +82,7 @@
               </template>
             </template>
           </vxe-table-column>-->
+          <vxe-column type="checkbox" width="60"></vxe-column>
           <vxe-table-column field="shop_id" title="商品ID"></vxe-table-column>
           <!-- <vxe-table-column field="product_num" title="商品编号"></vxe-table-column> -->
           <vxe-table-column field="role" title="商品图片">
@@ -92,9 +99,13 @@
               </el-image>
             </template>
           </vxe-table-column>
-          <vxe-table-column field="role" title="商品轮播图片">
+          <!-- <vxe-table-column field="role" title="商品轮播图片">
             <template slot-scope="scope">
-              <div style="display:inline-block;margin:0 3px" v-for="(item,i) in scope.row.shop_rotation" :key="i">
+              <div
+                style="display:inline-block;margin:0 3px"
+                v-for="(item,i) in scope.row.shop_rotation"
+                :key="i"
+              >
                 <el-image
                   v-if="item != ''"
                   :src="item"
@@ -108,16 +119,18 @@
                 </el-image>
               </div>
             </template>
-          </vxe-table-column>
+          </vxe-table-column>-->
           <vxe-table-column field="shop_name" title="商品名称"></vxe-table-column>
-          <!-- <vxe-table-column field="product_price" title="商品售价"></vxe-table-column> -->
+          <vxe-table-column field="shop_price" title="商品售价"></vxe-table-column>
+          <vxe-table-column field="shop_before" title="商品原价"></vxe-table-column>
+          <vxe-table-column field="category_name" title="分类"></vxe-table-column>
           <!-- <vxe-table-column field="ficti" title="销量"></vxe-table-column> -->
           <!-- <vxe-table-column field="stock" title="库存"></vxe-table-column> -->
-          <!-- <vxe-table-column field="status" title="状态(是否显示)">
+          <vxe-table-column field="status" title="状态(是否上架)">
             <template slot-scope="scope">
-              <el-switch @change="changeKG(scope.row)" v-model="scope.row.myStatus"></el-switch>
+              <el-switch @change="changeKG(scope.row)" v-model="scope.row.need_show"></el-switch>
             </template>
-          </vxe-table-column>-->
+          </vxe-table-column>
           <vxe-table-column title="操作状态" width="120">
             <template slot-scope="scope">
               <div class="flex">
@@ -153,32 +166,31 @@
       >
         <div class="myAddForm">
           <el-form :model="addForm" ref="addForm" label-width="100px" class="demo-addForm">
-            <!-- <el-row>
-            <el-col :span="20">
-              <el-form-item label="父级">
-                <el-select size="small" v-model="addForm.pid" placeholder="请选择">
-                  <el-option label="顶级分类" value="0"></el-option>
-                  <el-option
-                    v-for="item in tableData"
-                    :key="item.id"
-                    :label="item.cate_name"
-                    :value="item.id"
-                  ></el-option>
-                </el-select>
-                <el-cascader v-model="addForm.pid" size="small" :options="tableData" :props="props"></el-cascader>
-              </el-form-item>
-            </el-col>
-            </el-row>-->
             <el-row>
               <el-col :span="20">
-                <el-form-item label="商品名称" prop="category_name">
+                <el-form-item label="商品分类：">
+                  <el-select size="small" v-model="addForm.category_id" placeholder="请选择">
+                    <el-option
+                      v-for="item in options2"
+                      :key="item.id"
+                      :label="item.name"
+                      :value="item.id"
+                    ></el-option>
+                  </el-select>
+                  <!-- <el-cascader v-model="addForm.pid" size="small" :options="tableData" :props="props"></el-cascader> -->
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row>
+              <el-col :span="20">
+                <el-form-item label="商品名称：" prop="category_name">
                   <el-input size="small" placeholder="请输入商品名称" v-model="addForm.shop_name"></el-input>
                 </el-form-item>
               </el-col>
             </el-row>
             <el-row>
               <el-col :span="20">
-                <el-form-item label="商品图片">
+                <el-form-item label="商品图片：">
                   <div @click="companyList('tb')" class="myImg">
                     <el-image :src="addForm.shop_img" fit="fill" style="width: 60px; height: 60px">
                       <div slot="error" class="image-slot">
@@ -215,21 +227,31 @@
             </el-row>
             <el-row>
               <el-col :span="20">
-                <el-form-item label="商品详情">
-                  <el-input size="small" type="textarea" v-model="addForm.shop_detail"></el-input>
+                <el-form-item label="商品原价：">
+                  <el-input size="small" placeholder="请输入商品原价" v-model="addForm.shop_before"></el-input>
                 </el-form-item>
               </el-col>
             </el-row>
             <el-row>
               <el-col :span="20">
-                <el-form-item label="商品价格">
+                <el-form-item label="商品价格：">
                   <el-input size="small" placeholder="请输入商品价格" v-model="addForm.shop_price"></el-input>
                 </el-form-item>
               </el-col>
             </el-row>
             <el-row>
+              <el-col :span="12">
+                <el-form-item label="状态">
+                  <el-radio-group v-model="addForm.is_show">
+                    <el-radio :label="1">实物商品</el-radio>
+                    <el-radio :label="2">虚拟商品</el-radio>
+                  </el-radio-group>
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row v-if="addForm.is_show == 2">
               <el-col :span="20">
-                <el-form-item label="虚拟卡ID">
+                <el-form-item label="虚拟卡ID：">
                   <el-select size="small" v-model="addForm.card_id" filterable placeholder="请选择">
                     <el-option
                       v-for="item in options"
@@ -239,6 +261,14 @@
                     ></el-option>
                   </el-select>
                 </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row>
+              <el-col :span="20">
+                <div class="myEditor">
+                  <div class="txt">商品详情：</div>
+                  <div id="editor"></div>
+                </div>
               </el-col>
             </el-row>
             <!-- <el-row>
@@ -275,6 +305,7 @@
 </template>
 
 <script>
+import E from "wangeditor";
 import { mapState } from "vuex";
 export default {
   computed: {
@@ -299,9 +330,14 @@ export default {
         shop_rotation: ["", "", "", "", "", "", "", "", "", ""],
         shop_detail: "",
         shop_price: "",
-        card_id: ""
+        card_id: "",
+        category_id: "",
+        shop_before: "",
+        is_show: 0,
       },
       formInline: {
+        search: "",
+        category_id: "",
         rad1: "",
         country_pos: "",
         country_code: "",
@@ -312,46 +348,137 @@ export default {
       },
       addDialogVisible: false,
       options: [],
+      options2: [],
       tableData: [],
       total: 0,
       isAdd: true,
       imgStatus: "",
       imgIndex: "",
-      id: ""
+      id: "",
+      editor: null,
+      content: "",
+      checkList1: [],
+      plfaArr: []
     };
   },
   created() {
     this.getMangheData();
     this.getData();
   },
+  async mounted() {},
   methods: {
     async getData() {
       const res = await this.$api.getShopList({
         pagesize: this.shangpingliebiaoPageSize,
-        pagenum: this.shangpingliebiaoPage
+        pagenum: this.shangpingliebiaoPage,
+        category_id: this.formInline.category_id,
+        search: this.formInline.search
       });
       console.log(res.data.data);
       this.total = res.data.total;
       this.tableData = res.data.data;
       this.tableData.forEach(ele => {
-        if(ele.shop_rotation != ''){
+        if (ele.shop_rotation != "") {
           ele.shop_rotation = JSON.parse(ele.shop_rotation);
         }
       });
+      const res2 = await this.$api.addMallCategory();
+      this.options2 = res2.data;
     },
     async getMangheData() {
       const res = await this.$api.getCardTypeList();
-      this.options = res.data;
+      this.options = res.data.data;
+    },
+    selectAllEvent() {
+      const records = this.$refs.xTable1.getCheckboxRecords();
+      // console.log(checked ? "所有勾选事件" : "所有取消事件", records);
+      this.checkList1 = records;
+    },
+    selectChangeEvent() {
+      const records = this.$refs.xTable1.getCheckboxRecords();
+      // console.log(checked ? "勾选事件" : "取消事件", records);
+      this.checkList1 = records;
+    },
+    plshang() {
+      this.plfaArr = [];
+      this.checkList1.forEach(ele => {
+        this.plfaArr.push(ele.shop_id);
+      });
+      console.log(this.plfaArr.toString());
+      this.$confirm("确认批量上架？").then(async () => {
+        const res = await this.$api.changeShopStatus({
+          shop_id: this.plfaArr.toString(),
+          need_show: true,
+        });
+        if (res.status == 200) {
+          this.$message({
+            message: res.msg,
+            type: "success"
+          });
+          this.checkList1 = []
+          this.getData();
+        }
+      });
+    },
+    plxia() {
+      this.plfaArr = [];
+      this.checkList1.forEach(ele => {
+        this.plfaArr.push(ele.shop_id);
+      });
+      console.log(this.plfaArr.toString());
+      this.$confirm("确认批量下架？").then(async () => {
+        const res = await this.$api.changeShopStatus({
+          shop_id: this.plfaArr.toString(),
+          need_show: false,
+        });
+        if (res.status == 200) {
+          this.$message({
+            message: res.msg,
+            type: "success"
+          });
+          this.checkList1 = []
+          this.getData();
+        }
+      });
+    },
+    plshan() {
+      this.plfaArr = [];
+      this.checkList1.forEach(ele => {
+        this.plfaArr.push(ele.shop_id);
+      });
+      console.log(this.plfaArr.toString());
+      this.$confirm("确认批量删除？").then(async () => {
+        const res = await this.$api.deleteShopList({
+          shop_id: this.plfaArr.toString()
+        });
+        if (res.status == 200) {
+          this.$message({
+            message: res.msg,
+            type: "success"
+          });
+          this.getData();
+          this.checkList1 = [];
+        } else {
+          this.$message.error(res.msg);
+        }
+      });
     },
     async AddOnSubmit() {
+      this.content = document.getElementsByClassName("w-e-text")[0].innerHTML;
+      console.log(this.addForm.is_show)
+      if(this.addForm.is_show == 1){
+        this.addForm.card_id = 0
+      }
       if (this.isAdd) {
         const res = await this.$api.addShopInfo({
           shop_name: this.addForm.shop_name,
           shop_img: this.addForm.shop_img,
           shop_rotation: JSON.stringify(this.addForm.shop_rotation),
-          shop_detail: this.addForm.shop_detail,
+          shop_detail: this.content,
           shop_price: this.addForm.shop_price,
-          card_id: this.addForm.card_id
+          card_id: this.addForm.card_id,
+          category_id: this.addForm.category_id,
+          shop_before: this.addForm.shop_before
         });
         if (res.status == 200) {
           this.$message({
@@ -369,16 +496,18 @@ export default {
           shop_name: this.addForm.shop_name,
           shop_img: this.addForm.shop_img,
           shop_rotation: JSON.stringify(this.addForm.shop_rotation),
-          shop_detail: this.addForm.shop_detail,
+          shop_detail: this.content,
           shop_price: this.addForm.shop_price,
-          card_id: this.addForm.card_id
+          card_id: this.addForm.card_id,
+          category_id: this.addForm.category_id,
+          shop_before: this.addForm.shop_before
         });
         if (res.status == 200) {
           this.$message({
             message: res.msg,
             type: "success"
           });
-          this.addDialogVisible= false;
+          this.addDialogVisible = false;
           this.getData();
         } else {
           this.$message.error(res.msg);
@@ -393,14 +522,13 @@ export default {
     },
     // 开关（上架/下架）
     async changeKG(row) {
-      console.log(row);
-      const res = await this.$api.product_status({
-        id: row.id,
-        status: row.myStatus == true ? "1" : "0"
+      const res = await this.$api.changeShopStatus({
+        shop_id: row.shop_id,
+        need_show: row.need_show ? true : false
       });
-      if (res.code == 200) {
+      if (res.status == 200) {
         this.$message({
-          message: res.message,
+          message: res.msg,
           type: "success"
         });
         this.getData();
@@ -411,30 +539,77 @@ export default {
       this.id = row.shop_id;
       console.log(row);
       this.addForm = { ...row };
+      this.$set( this.addForm ,'is_show',row.iscard ? 2 : 1)
       if (row.shop_rotation == "") {
         this.addForm.shop_rotation = ["", "", "", "", "", "", "", "", "", ""];
       } else {
-        this.addForm.shop_rotation = row.shop_rotation
+        this.addForm.shop_rotation = row.shop_rotation;
         // if(this.addForm.shop_rotation.length)
       }
-      this.addForm.card_id = row.card_type_id;
+      this.$set( this.addForm ,'card_id',row.card_type_id)
       this.addDialogVisible = true;
+      setTimeout(() => {
+        this.changeEdior();
+        this.editor.txt.html(row.shop_detail);
+      }, 500);
     },
     async toDelShop(row) {
-      const res = await this.$api.deleteProduct(row.id);
-      if (res.code == 200) {
+      const res = await this.$api.deleteShopList({
+        shop_id: row.shop_id
+      });
+      if (res.status == 200) {
         this.$message({
-          message: res.message,
+          message: res.msg,
           type: "success"
         });
         this.getData();
+      } else {
+        this.$message.error(res.msg);
       }
     },
     tabsHandleClick(tab, event) {
       console.log(tab, event);
     },
     onSubmit() {
-      console.log("submit!");
+      this.getData();
+    },
+    changeEdior() {
+      if (this.editor) {
+        return;
+      }
+      var editor = new E("#editor");
+      editor.config.menus = [
+        "head",
+        "bold",
+        "fontSize",
+        "fontName",
+        "italic",
+        "underline",
+        "strikeThrough",
+        "indent",
+        "lineHeight",
+        "foreColor",
+        "backColor",
+        "list",
+        "justify",
+        "emoticon",
+        "image",
+        "table",
+        "undo",
+        "redo"
+      ];
+      editor.config.customUploadImg = async (resultFiles, insertImgFn) => {
+        // resultFiles 是 input 中选中的文件列表
+        // insertImgFn 是获取图片 url 后，插入到编辑器的方法
+        this.imgFile = new FormData();
+        this.imgFile.append("file", resultFiles[0]);
+        const res = await this.$api.upload_pic(this.imgFile);
+        console.log(res.data);
+        // 上传图片，返回结果，将图片插入到编辑器中
+        insertImgFn(res.data);
+      };
+      this.editor = editor;
+      this.editor.create();
     },
     toAddShop() {
       this.isAdd = true;
@@ -452,11 +627,17 @@ export default {
             "",
             ""
           ]);
+        } else if (key == "is_show") {
+          this.$set(this.addForm, key, 1);
         } else {
           this.$set(this.addForm, key, "");
         }
       }
       this.addDialogVisible = true;
+      setTimeout(() => {
+        this.changeEdior();
+        this.editor.txt.html('');
+      }, 500);
     },
     // 删除图片
     delImg(val, i) {
@@ -491,6 +672,7 @@ export default {
           const res = await that.$api.upload_pic(this.imgFile);
           if (this.imgStatus == "tb") {
             this.$set(this.addForm, "shop_img", `${res.data}`);
+            this.$set(this.addForm.shop_rotation, 0, `${res.data}`);
           } else if (this.imgStatus == "lbt") {
             this.$set(this.addForm.shop_rotation, this.imgIndex, `${res.data}`);
           }
@@ -553,7 +735,14 @@ export default {
     }
   }
   .tit1 {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     margin-top: 10px;
+    .b-right {
+      display: flex;
+      align-items: center;
+    }
   }
   .myTable {
     margin-top: 10px;
@@ -641,6 +830,21 @@ export default {
         font-size: 20px;
       }
     }
+  }
+}
+.myEditor {
+  padding-top: 20px;
+  display: flex;
+  .txt {
+    color: #606266;
+    width: 216px;
+    font-size: 12px;
+    margin-right: 12px;
+    margin-top: 2px;
+    text-align: right;
+  }
+  #editor {
+    transform: translateY(-6px);
   }
 }
 .displayN {

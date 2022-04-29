@@ -13,6 +13,24 @@
     <div class="nav2">
       <div class="myForm">
         <el-form :inline="true" :model="formInline" class="demo-form-inline">
+          <el-form-item label="商品分类：">
+            <el-select size="small" v-model="formInline.category_id" placeholder="请选择">
+              <el-option
+                v-for="item in options2"
+                :key="item.id"
+                :label="item.name"
+                :value="item.id"
+              ></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="稀有度：">
+            <el-radio-group @change="changeRad2" v-model="formInline.shop_quality" size="small">
+              <el-radio-button label="0">金色传说</el-radio-button>
+              <el-radio-button label="1">红色史诗</el-radio-button>
+              <el-radio-button label="2">紫色稀有</el-radio-button>
+              <el-radio-button label="3">蓝色普通</el-radio-button>
+            </el-radio-group>
+          </el-form-item>
           <el-form-item label="盲盒类型：">
             <el-radio-group @change="changeRad1" v-model="formInline.rad1" size="small">
               <el-radio-button
@@ -22,26 +40,16 @@
               >{{item.box_name}}</el-radio-button>
             </el-radio-group>
           </el-form-item>
-          <!-- <el-form-item label="商品分类：">
-            <el-cascader
-              size="small"
-              :options="options"
-              :props="{ checkStrictly: true, value: 'id',label: 'category_name'}"
-              clearable
-            ></el-cascader>
-          </el-form-item>
-          <el-form-item label="商品搜索：">
+          <!-- <el-form-item label="商品搜索：">
             <el-input
               size="small"
               v-model="formInline.user"
               placeholder="商品搜索"
             ></el-input>
-          </el-form-item>
-          <el-form-item>
-            <el-button size="small" type="primary" @click="onSubmit"
-              >查询</el-button
-            >
           </el-form-item>-->
+          <el-form-item>
+            <el-button size="small" type="primary" @click="onSubmit">查询</el-button>
+          </el-form-item>
         </el-form>
       </div>
       <div class="tit1">
@@ -93,9 +101,13 @@
               </el-image>
             </template>
           </vxe-table-column>
-          <vxe-table-column field="role" title="商品轮播图片">
+          <!-- <vxe-table-column field="role" title="商品轮播图片">
             <template slot-scope="scope">
-              <div v-for="(item,i) in scope.row.shop_rotation" :key="i">
+              <div
+                style="display:inline-block;margin:0 3px"
+                v-for="(item,i) in scope.row.shop_rotation"
+                :key="i"
+              >
                 <el-image
                   v-if="item != ''"
                   :src="item"
@@ -109,7 +121,7 @@
                 </el-image>
               </div>
             </template>
-          </vxe-table-column>
+          </vxe-table-column>-->
           <vxe-table-column field="shop_name" title="商品名称"></vxe-table-column>
           <vxe-table-column field="shop_price" title="商品售价"></vxe-table-column>
           <vxe-table-column field="myShop_quality" title="稀有度"></vxe-table-column>
@@ -159,13 +171,7 @@
             <el-row v-if="this.isAdd">
               <el-col :span="20">
                 <el-form-item label="盲盒类型" prop="category_name">
-                  <el-select
-                    @change="changeFenlei"
-                    size="small"
-                    v-model="addForm.box_id"
-                    filterable
-                    placeholder="请选择"
-                  >
+                  <el-select size="small" @change="changeFenlei" v-model="addForm.box_id" filterable placeholder="请选择">
                     <el-option
                       v-for="item in fenleiOptions"
                       :key="item.box_id"
@@ -173,6 +179,33 @@
                       :value="item.box_id"
                     ></el-option>
                   </el-select>
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row>
+              <el-col v-if="this.isAdd" :span="20">
+                <el-form-item label="商品分类" prop="category_id">
+                  <el-select
+                    @change="changeFenlei"
+                    size="small"
+                    v-model="addForm.category_id"
+                    filterable
+                    placeholder="请选择"
+                  >
+                    <el-option
+                      v-for="item in options2"
+                      :key="item.id"
+                      :label="item.name"
+                      :value="item.id"
+                    ></el-option>
+                  </el-select>
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row>
+              <el-col v-if="!this.isAdd" :span="20">
+                <el-form-item label="商品名称：">
+                  <el-input size="small" disabled placeholder="请输入商品名称" v-model="addForm.shop_name"></el-input>
                 </el-form-item>
               </el-col>
             </el-row>
@@ -257,11 +290,14 @@ export default {
   data() {
     return {
       // activeName: "3",
+      options2: [],
       addForm: {
+        category_id: "",
         box_id: "",
         shop_id: "",
         shop_quality: "",
-        shop_probability: ""
+        shop_probability: "",
+        shop_name:"",
         // shop_name: "",
         // shop_img: "",
         // shop_rotation: ["", "", "", "", "", "", "", "", "", ""],
@@ -270,6 +306,8 @@ export default {
         // card_id: ""
       },
       formInline: {
+        shop_quality: "0",
+        category_id: "",
         rad1: "",
         country_pos: "",
         country_code: "",
@@ -295,18 +333,25 @@ export default {
     this.$store.commit("shangpingliebiaoPage", 1);
     this.$store.commit("shangpingliebiaoPageSize", 10);
     this.getFenleiData();
+    this.getfenlei();
     // this.getShopData()
     setTimeout(() => {
       this.formInline.rad1 = this.fenleiOptions[0].box_id;
       this.getData();
-    }, 500);
+    }, 1000);
   },
   methods: {
+    async getfenlei() {
+      const res2 = await this.$api.addMallCategory();
+      this.options2 = res2.data;
+    },
     async getData() {
       const res = await this.$api.getBoxDetail({
         pagesize: this.shangpingliebiaoPageSize,
         pagenum: this.shangpingliebiaoPage,
-        box_id: this.formInline.rad1
+        box_id: this.formInline.rad1,
+        category_id: this.formInline.category_id,
+        shop_quality: this.formInline.shop_quality
       });
       console.log(res.data.data);
       this.total = res.data.total;
@@ -315,7 +360,14 @@ export default {
         if (ele.shop_rotation != "") {
           ele.shop_rotation = JSON.parse(ele.shop_rotation);
         }
-        ele.myShop_quality = ele.shop_quality == 0 ? '金色传说' : ele.shop_quality == 1 ? '红色史诗' : ele.shop_quality == 2 ? '紫色稀有' : "蓝色普通"
+        ele.myShop_quality =
+          ele.shop_quality == 0
+            ? "金色传说"
+            : ele.shop_quality == 1
+            ? "红色史诗"
+            : ele.shop_quality == 2
+            ? "紫色稀有"
+            : "蓝色普通";
       });
     },
     async getShopData() {
@@ -335,15 +387,19 @@ export default {
     },
     async getMangheData() {
       const res = await this.$api.getBoxCanAddShopList({
-        box_id: this.formInline.rad1,
+        box_id: this.addForm.box_id,
         pagesize: 10000,
-        pagenum: 1
+        pagenum: 1,
+        category_id: this.addForm.category_id
       });
       this.shopOptions = res.data.data;
     },
     changeFenlei() {
       this.haveFenlei = true;
-      this.getMangheData();
+      if(this.addForm.category_id != ''){
+        this.addForm.shop_id = ''
+        this.getMangheData();
+      }
     },
     async AddOnSubmit() {
       if (this.isAdd) {
@@ -388,6 +444,9 @@ export default {
     changeRad1() {
       this.getData();
     },
+    changeRad2() {
+      this.getData();
+    },
     // 开关（上架/下架）
     async changeKG(row) {
       console.log(row);
@@ -419,25 +478,28 @@ export default {
       this.addDialogVisible = true;
     },
     async toDelShop(row) {
-      const res = await this.$api.deleteBoxShop({
-        box_id: row.box_id,
-        shop_id: row.shop_id
-      });
-      if (res.status == 200) {
-        this.$message({
-          message: res.msg,
-          type: "success"
+      this.$confirm("确认删除？").then(async () => {
+        const res = await this.$api.deleteBoxShop({
+          box_id: row.box_id,
+          shop_id: row.shop_id
         });
-        this.getData();
-      } else {
-        this.$message.error(res.msg);
-      }
+        if (res.status == 200) {
+          this.$message({
+            message: res.msg,
+            type: "success"
+          });
+          this.getData();
+        } else {
+          this.$message.error(res.msg);
+        }
+      });
     },
     tabsHandleClick(tab, event) {
       console.log(tab, event);
     },
     onSubmit() {
       console.log("submit!");
+      this.getData();
     },
     toAddShop() {
       this.isAdd = true;
@@ -459,6 +521,7 @@ export default {
           this.$set(this.addForm, key, "");
         }
       }
+      this.addForm.category_id = ''
       this.addDialogVisible = true;
     },
     // 删除图片

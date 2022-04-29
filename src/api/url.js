@@ -37,4 +37,21 @@ export default {
     addManageMemberWithPower:'/member/addManageMemberWithPower',//添加管理员
     updateManageInfo:'/member/updateManageInfo',//修改管理员信息
     deleteManageById:'/deleteManageById',//删除管理员
+    deleteCardById:'/deleteCardById',//删除卡号
+    searchBoxOrder:'/order/searchBoxOrder',//获取盲盒订单列表
+    searchBoxOrderDetail:'/order/searchBoxOrderDetail',//获取盲盒购买订单 子订单详情
+    searchGoodsOrderList:'/order/searchGoodsOrderList',//实物订单列表
+    searchCardsOrderList:'/order/searchCardsOrderList',//虚拟订单列表
+    getBoxProSettingListBySaleNum:'/box/getBoxProSettingListBySaleNum',//盲盒更多概率设置
+    addProSettingDetail:'/box/addProSettingDetail',//添加盲盒第二套概率
+    changeProSettingDetail:'/box/changeProSettingDetail',//修改盲盒第二套概率
+    deleteProSettingDetail:'/box/deleteProSettingDetail',//删除盲盒额外参数
+    changeShopStatus:'/changeShopStatus',//商品上下架
+    getOperateData:'/getOperateData',//获取运营数据
+    changeProSettingUsed:'/box/changeProSettingUsed',//设置第二套概率是否启用
+    sendCardList:'/sendCardList',//虚拟物品发货功能
+    deleteShopList:'/deleteShopList',//删除商品
+    getUserHistoryList:'/user/getUserHistoryList',//获取用户订单数据
+    getAllOrderDetail:'/order/getAllOrderDetail',//获取所有待处理订单
+    getBoxSaleByBoxId:'/box/getBoxSaleByBoxId',//获取盲盒的销量
 }

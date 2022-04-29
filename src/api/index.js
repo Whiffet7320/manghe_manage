@@ -575,6 +575,159 @@ export default {
             }
         })
     },
+    deleteCardById(obj){
+        return myPost({
+            url: urls.deleteCardById,
+            params: {
+                ...obj,
+                manage_id:sessionStorage.getItem("manage_id"),
+            }
+        })
+    },
+    searchBoxOrder(obj){
+        return myPost({
+            url: urls.searchBoxOrder,
+            params: {
+                ...obj,
+                manage_id:sessionStorage.getItem("manage_id"),
+            }
+        })
+    },
+    searchBoxOrderDetail(obj){
+        return myPost({
+            url: urls.searchBoxOrderDetail,
+            params: {
+                ...obj,
+                manage_id:sessionStorage.getItem("manage_id"),
+            }
+        })
+    },
+    searchGoodsOrderList(obj){
+        return myPost({
+            url: urls.searchGoodsOrderList,
+            params: {
+                ...obj,
+                manage_id:sessionStorage.getItem("manage_id"),
+            }
+        })
+    },
+    searchCardsOrderList(obj){
+        return myPost({
+            url: urls.searchCardsOrderList,
+            params: {
+                ...obj,
+                manage_id:sessionStorage.getItem("manage_id"),
+            }
+        })
+    },
+    getBoxProSettingListBySaleNum(obj){
+        return myPost({
+            url: urls.getBoxProSettingListBySaleNum,
+            params: {
+                ...obj,
+                manage_id:sessionStorage.getItem("manage_id"),
+            }
+        })
+    },
+    addProSettingDetail(obj){
+        return myPost({
+            url: urls.addProSettingDetail,
+            params: {
+                ...obj,
+                manage_id:sessionStorage.getItem("manage_id"),
+            }
+        })
+    },
+    deleteProSettingDetail(obj){
+        return myPost({
+            url: urls.deleteProSettingDetail,
+            params: {
+                ...obj,
+                manage_id:sessionStorage.getItem("manage_id"),
+            }
+        })
+    },
+    changeProSettingDetail(obj){
+        return myPost({
+            url: urls.changeProSettingDetail,
+            params: {
+                ...obj,
+                manage_id:sessionStorage.getItem("manage_id"),
+            }
+        })
+    },
+    changeShopStatus(obj){
+        return myPost({
+            url: urls.changeShopStatus,
+            params: {
+                ...obj,
+                manage_id:sessionStorage.getItem("manage_id"),
+            }
+        })
+    },
+    getOperateData(obj){
+        return myPost({
+            url: urls.getOperateData,
+            params: {
+                ...obj,
+                manage_id:sessionStorage.getItem("manage_id"),
+            }
+        })
+    },
+    changeProSettingUsed(obj){
+        return myPost({
+            url: urls.changeProSettingUsed,
+            params: {
+                ...obj,
+                manage_id:sessionStorage.getItem("manage_id"),
+            }
+        })
+    },
+    sendCardList(obj){
+        return myPost({
+            url: urls.sendCardList,
+            params: {
+                ...obj,
+                manage_id:sessionStorage.getItem("manage_id"),
+            }
+        })
+    },
+    deleteShopList(obj){
+        return myPost({
+            url: urls.deleteShopList,
+            params: {
+                ...obj,
+                manage_id:sessionStorage.getItem("manage_id"),
+            }
+        })
+    },
+    getUserHistoryList(obj){
+        return myPost({
+            url: urls.getUserHistoryList,
+            params: {
+                ...obj,
+                manage_id:sessionStorage.getItem("manage_id"),
+            }
+        })
+    },
+    getAllOrderDetail(obj){
+        return myPost({
+            url: urls.getAllOrderDetail,
+            params: {
+                ...obj,
+                manage_id:sessionStorage.getItem("manage_id"),
+            }
+        })
+    },
+    getBoxSaleByBoxId(obj){
+        return myPost({
+            url: urls.getBoxSaleByBoxId,
+            params: {
+                ...obj,
+                manage_id:sessionStorage.getItem("manage_id"),
+            }
+        })
+    },
     async importCardListFromExcel(file) {
         var configs = {
             headers: {

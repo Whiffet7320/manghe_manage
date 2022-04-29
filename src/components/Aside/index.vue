@@ -29,12 +29,20 @@
               <i :class="item.icon"></i>
               <span>{{item.name}}</span>
             </template>
+            <!-- <template v-if="item2.menu_index == '3-3'">
+              <el-menu-item
+                :key="item2.url"
+                :route="{ name: item2.url }"
+                :index="item2.menu_index"
+              >{{item2.route.name}}</el-menu-item>
+            </template>-->
+
             <el-menu-item
               v-for="item2 in item.sub_menu"
               :key="item2.url"
               :route="{ name: item2.url }"
               :index="item2.menu_index"
-            >{{item2.route.name}}</el-menu-item>
+            >{{item2.route.name}}{{item2.menu_index == '3-3' ? order_sum: item2.menu_index == '3-4' ? card_sum : '' }}</el-menu-item>
           </el-submenu>
         </div>
 
@@ -51,7 +59,7 @@
             <el-menu-item :route="{ name: 'Shangpinguanli' }" index="2-1">商品管理</el-menu-item>
             <el-menu-item :route="{ name: 'Mangheshangping' }" index="2-16">盲盒商品管理</el-menu-item>
             <el-menu-item :route="{ name: 'Xunishangping' }" index="2-14">虚拟商品管理</el-menu-item>
-            <el-menu-item :route="{ name: 'Fenleishangping' }" index="2-15">分类商品管理</el-menu-item>
+            <!-- <el-menu-item :route="{ name: 'Fenleishangping' }" index="2-15">分类商品管理</el-menu-item> -->
             <el-menu-item :route="{ name: 'Shangpingfenlei' }" index="2-2">商品分类</el-menu-item>
             <el-menu-item :route="{ name: 'Mangheguanli' }" index="2-13">盲盒管理</el-menu-item>
           </el-submenu>
@@ -60,7 +68,10 @@
               <i class="el-icon-s-order"></i>
               <span>订单</span>
             </template>
-            <el-menu-item :route="{ name: 'Dingdanguanli' }" index="3-1">订单管理</el-menu-item>
+            <!-- <el-menu-item :route="{ name: 'Dingdanguanli' }" index="3-1">订单管理</el-menu-item> -->
+            <el-menu-item :route="{ name: 'Manghedingdanguanli' }" index="3-2">盲盒订单</el-menu-item>
+            <el-menu-item :route="{ name: 'Shiwudingdanguanli' }" index="3-3">实物订单（{{order_sum}}）</el-menu-item>
+            <el-menu-item :route="{ name: 'Xunidingdanguanli' }" index="3-4">虚拟订单（{{card_sum}}）</el-menu-item>
           </el-submenu>
           <el-submenu index="5">
             <template slot="title">
@@ -94,6 +105,11 @@ export default {
   watch: {
     $route(to) {
       console.log(to.path); //到哪去
+      (async () => {
+        const res = await this.$api.getAllOrderDetail();
+        this.card_sum = `(${res.data.card_sum})`;
+        this.order_sum = `(${res.data.order_sum})`;
+      })();
       if (to.path == "/Shouye") {
         this.menuActiveIndex = "1-1";
         this.$store.commit("headerTit", "首页");
@@ -227,6 +243,27 @@ export default {
           "headerTit",
           `订单 / <span style="color: #515a61;
         font-weight: 700;">订单管理</span>`
+        );
+      } else if (to.path == "/Dingdan/Manghedingdanguanli") {
+        this.menuActiveIndex = "3-2";
+        this.$store.commit(
+          "headerTit",
+          `订单 / <span style="color: #515a61;
+        font-weight: 700;">盲盒订单</span>`
+        );
+      } else if (to.path == "/Dingdan/Shiwudingdanguanli") {
+        this.menuActiveIndex = "3-3";
+        this.$store.commit(
+          "headerTit",
+          `订单 / <span style="color: #515a61;
+        font-weight: 700;">实物订单</span>`
+        );
+      } else if (to.path == "/Dingdan/Xunidingdanguanli") {
+        this.menuActiveIndex = "3-4";
+        this.$store.commit(
+          "headerTit",
+          `订单 / <span style="color: #515a61;
+        font-weight: 700;">虚拟订单</span>`
         );
       } else if (to.path == "/Yingxiao/Pingtuanshangping") {
         this.menuActiveIndex = "4-1-1";
@@ -398,7 +435,9 @@ export default {
       menuActiveIndex: "",
       userInfo: null,
       isCollapse: false,
-      menu: []
+      menu: [],
+      card_sum: 0,
+      order_sum: 0
     };
   },
   created() {

@@ -99,6 +99,18 @@ const routes = [{
         path: 'Dingdanguanli',
         name: 'Dingdanguanli',
         component: () => import('./components/Dingdan/Dingdanguanli'),
+    },{
+        path: 'Manghedingdanguanli',
+        name: 'Manghedingdanguanli',
+        component: () => import('./components/Dingdan/Manghedingdanguanli'),
+    },{
+        path: 'Shiwudingdanguanli',
+        name: 'Shiwudingdanguanli',
+        component: () => import('./components/Dingdan/Shiwudingdanguanli'),
+    },{
+        path: 'Xunidingdanguanli',
+        name: 'Xunidingdanguanli',
+        component: () => import('./components/Dingdan/Xunidingdanguanli'),
     }, ]
 }, {
     path: '/Rizhi',
@@ -230,7 +242,7 @@ const routes = [{
 }, ]
 
 const router = new VueRouter({
-    mode: 'history',
+    mode: 'hash',
     routes,
 })
 

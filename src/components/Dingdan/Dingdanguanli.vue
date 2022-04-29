@@ -220,12 +220,12 @@
             <template slot-scope="scope">
               <div class="flex">
                 <el-button
-                  v-if="scope.row.status == 0"
+                  :disabled='scope.row.status != 0'
                   size="small"
                   @click="fahuo(scope.row)"
                   type="text"
                 >发货</el-button>
-                <el-button size="small" @click="toEditShop(scope.row)" type="text">删除</el-button>
+                <!-- <el-button size="small" @click="toEditShop(scope.row)" type="text">删除</el-button> -->
               </div>
             </template>
           </vxe-table-column>
@@ -451,18 +451,21 @@ export default {
       }
     },
     async toEditShop(row) {
-      console.log(row);
-      const res = await this.$api.orderDel({
-        id: row.id
-      });
-      console.log(res);
-      if (res.code == 200) {
-        this.$message({
-          message: res.msg,
-          type: "success"
-        });
-        this.getData();
-      }
+      this.$confirm("确认删除？")
+        .then(async () => {
+          console.log('aaaa')
+          const res = await this.$api.orderDel({
+            id: row.id
+          });
+          console.log(res);
+          if (res.code == 200) {
+            this.$message({
+              message: res.msg,
+              type: "success"
+            });
+            this.getData();
+          }
+        })
     },
     tabsHandleClick(tab, event) {
       console.log(tab, event);

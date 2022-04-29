@@ -45,10 +45,34 @@ export default new Vuex.Store({
     wenzhangliebiaoPageSize: 10,
     pingtuanjiluPage: 1, //拼团记录
     pingtuanjiluPageSize: 10,
+    mangheDingdanPage: 1, 
+    mangheDingdanPageSize: 10,
+    shiwuDingdanPage: 1, 
+    shiwuDingdanPageSize: 10,
+    xuniDingdanPage: 1, 
+    xuniDingdanPageSize: 10,
   },
   mutations: {
     userInfo(state, str) {
       state.userInfo = str;
+    },
+    xuniDingdanPage(state, str) {
+      state.xuniDingdanPage = str;
+    },
+    xuniDingdanPageSize(state, str) {
+      state.xuniDingdanPageSize = str;
+    },
+    shiwuDingdanPage(state, str) {
+      state.shiwuDingdanPage = str;
+    },
+    shiwuDingdanPageSize(state, str) {
+      state.shiwuDingdanPageSize = str;
+    },
+    mangheDingdanPage(state, str) {
+      state.mangheDingdanPage = str;
+    },
+    mangheDingdanPageSize(state, str) {
+      state.mangheDingdanPageSize = str;
     },
     shangpingliebiaoPage(state, str) {
       state.shangpingliebiaoPage = str;

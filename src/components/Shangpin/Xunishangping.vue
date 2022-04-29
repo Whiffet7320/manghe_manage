@@ -181,10 +181,21 @@
               <el-button size="small" type="primary" @click="onSubmit">查询</el-button>
               <el-button size="small" type="primary" @click="daochuSubmit">导出</el-button>
             </el-form-item>
+            <div class="pl-right">
+              <el-form-item>
+                <el-button @click="plshan" size="small" type="primary">批量删除</el-button>
+              </el-form-item>
+            </div>
           </el-form>
         </div>
         <div class="myTable">
-          <vxe-table :data="tableData2">
+          <vxe-table
+            :data="tableData2"
+            ref="xTable1"
+            @checkbox-all="selectAllEvent"
+            @checkbox-change="selectChangeEvent"
+          >
+            <vxe-column type="checkbox" width="60"></vxe-column>
             <vxe-table-column field="card_id" title="ID"></vxe-table-column>
             <!-- <vxe-table-column field="product_num" title="商品编号"></vxe-table-column> -->
             <!-- <vxe-table-column field="role" title="商品图片">
@@ -222,7 +233,9 @@
             <vxe-table-column field="card_account" title="卡号"></vxe-table-column>
             <vxe-table-column field="card_password" title="卡密"></vxe-table-column>
             <vxe-table-column field="myHas_used" title="是否被使用"></vxe-table-column>
-            <!-- <vxe-table-column field="product_price" title="商品售价"></vxe-table-column> -->
+            <vxe-table-column field="used_id" title="申请人id"></vxe-table-column>
+            <vxe-table-column field="myUsed_time" title="发货时间"></vxe-table-column>
+            <vxe-table-column field="myAdd_time" title="添加时间"></vxe-table-column>
             <!-- <vxe-table-column field="ficti" title="销量"></vxe-table-column> -->
             <!-- <vxe-table-column field="stock" title="库存"></vxe-table-column> -->
             <!-- <vxe-table-column field="status" title="状态(是否显示)">
@@ -230,15 +243,13 @@
               <el-switch @change="changeKG(scope.row)" v-model="scope.row.myStatus"></el-switch>
             </template>
             </vxe-table-column>-->
-            <!-- <vxe-table-column title="操作状态" width="160">
+            <vxe-table-column title="操作状态" width="100">
               <template slot-scope="scope">
                 <div class="flex">
-                  <el-button size="small" @click="toEditShop(scope.row)" type="text">添加</el-button>
-                  <el-button size="small" @click="toSeeShop(scope.row)" type="text">查看</el-button>
-                  <el-button size="small" @click="toDelShop(scope.row)" type="text">删除</el-button>
+                  <el-button size="small" @click="delKahao(scope.row)" type="text">删除</el-button>
                 </div>
               </template>
-            </vxe-table-column>-->
+            </vxe-table-column>
           </vxe-table>
           <el-pagination
             class="fenye"
@@ -350,6 +361,7 @@ export default {
   data() {
     return {
       // activeName: "3",
+      checkList1: [],
       formInline2: {
         search_key: "",
         time: [],
@@ -400,11 +412,54 @@ export default {
       console.log(res.data.data);
       this.total = res.data.total;
       this.tableData = res.data.data;
-      // this.tableData.forEach(ele => {
-      //   if(ele.shop_rotation != ''){
-      //     ele.shop_rotation = JSON.parse(ele.shop_rotation);
-      //   }
-      // });
+    },
+    selectAllEvent() {
+      const records = this.$refs.xTable1.getCheckboxRecords();
+      // console.log(checked ? "所有勾选事件" : "所有取消事件", records);
+      this.checkList1 = records;
+    },
+    selectChangeEvent() {
+      const records = this.$refs.xTable1.getCheckboxRecords();
+      // console.log(checked ? "勾选事件" : "取消事件", records);
+      this.checkList1 = records;
+    },
+    formatDate(now) {
+      var time = new Date(now);
+      var year = time.getFullYear();
+      var month = time.getMonth() + 1;
+      var date = time.getDate();
+      var hour = time.getHours();
+      var minute = time.getMinutes();
+      var second = time.getSeconds();
+      return (
+        year +
+        "-" +
+        month +
+        "-" +
+        date +
+        " " +
+        hour +
+        ":" +
+        minute +
+        ":" +
+        second
+      );
+    },
+    async delKahao(row) {
+      this.$confirm("确认删除？").then(async () => {
+        const res = await this.$api.deleteCardById({
+          card_id: row.card_id
+        });
+        if (res.status == 200) {
+          this.$message({
+            message: res.msg,
+            type: "success"
+          });
+          this.seeData();
+        } else {
+          this.$message.error(res.msg);
+        }
+      });
     },
     async seeData(flag = false) {
       const res = await this.$api.exportCard({
@@ -423,6 +478,12 @@ export default {
         this.tableData2 = res.data.data;
         this.tableData2.forEach(ele => {
           ele.myHas_used = ele.has_used ? "是" : "否";
+          if (ele.used_time) {
+            ele.myUsed_time = this.formatDate(ele.used_time);
+          }
+          if (ele.add_time) {
+            ele.myAdd_time = this.formatDate(ele.add_time);
+          }
         });
       } else {
         window.open(res.data);
@@ -606,6 +667,29 @@ export default {
       this.imgIndex = i;
       this.$refs.fileInputList.click();
     },
+    plshan() {
+      // console.log(this.checkList1);
+      this.plshanArr = [];
+      this.checkList1.forEach(ele => {
+        this.plshanArr.push(ele.card_id);
+      });
+      console.log(this.plshanArr.toString());
+      this.$confirm("确认批量删除？").then(async () => {
+        const res = await this.$api.deleteCardById({
+          card_id: this.plshanArr.toString()
+        });
+        if (res.status == 200) {
+          this.$message({
+            message: res.msg,
+            type: "success"
+          });
+          this.seeData();
+          this.checkList1 = []
+        } else {
+          this.$message.error(res.msg);
+        }
+      });
+    },
     async companyLogo(event) {
       const that = this;
       var file = event.target.files[0];
@@ -659,6 +743,9 @@ export default {
 
 <style lang="scss" scoped>
 .index {
+}
+.pl-right {
+  float: right;
 }
 .nav1 {
   margin: 0 -18px;
