@@ -174,16 +174,41 @@
           <vxe-table-column field="deliver_time" title="发货日期"></vxe-table-column>
           <vxe-table-column field="user_id" title="用户ID"></vxe-table-column>
           <vxe-table-column field="order_status_name" title="订单状态"></vxe-table-column>
-          <vxe-table-column title="操作状态" width="120">
+          <vxe-table-column title="操作状态" width="180">
             <template slot-scope="scope">
               <div class="flex">
                 <el-button
-                  :disabled="scope.row.order_status_name != '待发货'"
+                v-if="scope.row.order_status_name == '待发货'"
                   size="small"
                   @click="fahuo(scope.row)"
                   type="text"
                 >发货</el-button>
-                <el-button size="small" @click="seeXiangqin(scope.row)" type="text">订单详情</el-button>
+                <!-- <el-button size="small" @click="seeXiangqin(scope.row)" type="text">订单详情</el-button> -->
+              <el-button
+                  v-if="form.search_status != 5"
+                  style="margin-right: 8px"
+                  size="small"
+                  @click="yichangDingdan(scope.row)"
+                  type="text"
+                  >异常订单</el-button
+                >
+                <el-popconfirm
+                  confirm-button-text="需要退款"
+                  cancel-button-text="不需要"
+                  title="是否需要退款?"
+                  icon="el-icon-warning"
+                  icon-color="red"
+                  @confirm="quxiaoDingdan(scope.row, true)"
+                  @cancel="quxiaoDingdan(scope.row, false)"
+                >
+                  <el-button
+                    :style="form.search_status == 5 ? 'margin-left:8px': 'margin-left:0px' "
+                    slot="reference"
+                    size="small"
+                    type="text"
+                    >取消订单</el-button
+                  >
+                </el-popconfirm>
               </div>
             </template>
           </vxe-table-column>
@@ -383,6 +408,34 @@ export default {
       // console.log(checked ? "勾选事件" : "取消事件", records);
       this.checkList1 = records;
     },
+    async yichangDingdan(row) {
+      const res = await this.$api.changeOrderToError({
+        order_id: row.order_id,
+      });
+      if (res.status == 200) {
+        this.$message({
+          message: res.msg,
+          type: "success",
+        });
+        this.getData();
+      }
+    },
+    async quxiaoDingdan(row, flag) {
+      console.log(row);
+      const res = await this.$api.changeOrderToCancle({
+        order_id: row.order_id,
+        need_refund: flag,
+      });
+      if (res.status == 200) {
+        this.$message({
+          message: res.msg,
+          type: "success",
+        });
+        this.getData();
+      }else {
+          this.$message.error(res.msg);
+        }
+    },
     plfa() {
       this.plfaArr = [];
       this.checkList1.forEach(ele => {
@@ -498,32 +551,6 @@ export default {
         }
       } else {
         this.$message.error(res.msg);
-      }
-    },
-    async yichangDingdan(row) {
-      const res = await this.$api.changeOrderToError({
-        order_id: row.order_id
-      });
-      if (res.status == 200) {
-        this.$message({
-          message: res.msg,
-          type: "success"
-        });
-        this.getData();
-      }
-    },
-    async quxiaoDingdan(row, flag) {
-      console.log(row);
-      const res = await this.$api.changeOrderToCancle({
-        order_id: row.order_id,
-        need_refund: flag
-      });
-      if (res.status == 200) {
-        this.$message({
-          message: res.msg,
-          type: "success"
-        });
-        this.getData();
       }
     },
     async toEditShop(row) {
